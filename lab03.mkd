@@ -1,0 +1,13 @@
+CARDÁPIO(_Data_, _Tipo_)
+
+PORÇÃO(_Id_, Tipo, NúmeroDePotes)
+
+SERVE(_Data_, _IdPorcao_)
+Data chave estrangeira -> CARDÁPIO(Data)
+IdPorcao chave estrangeira -> PORÇÃO(Id)
+
+INGREDIENTE(_Nome_, macronutriente, micronutrientes)
+
+COMPÕE(SuperIngrediente, SubIngrediente)
+
+
