@@ -7,20 +7,35 @@
 
 ## Modelo Conceitual ER Revisado
 
-<img src="https://drive.google.com/file/d/1_FgeY1Yc060Qf8oukuzfJCG6cqMqctgK/view?ts=64ef9606" width="400px" height="auto">
+<img src="images/lab03_UML.png" width="400px" height="auto">
 
 *Diagrama ER Revisado*
 
 ## Mapeamento para o Modelo Relacional
 ~~~
-ALUNO(Nome, RA , Email)
-BANDEJA(ID_bandeja, Data_consumo, RA_aluno)
-   -RA_aluno: chave estrangeira para ALUNO
+ALUNO(Nome, _RA_ , Email)
+
+BANDEJA(_Id_, Data_consumo, RA_aluno)
+   RA_aluno chave estrangeira -> ALUNO(Ra)
+
 FORMA() - falta a chave primária
-CARDÁPIO(Data)
-REFEIÇÃO(Tipo, Horário) - falta a chave primária - colocar grupos
-REGRA(Nome_porção1, Nome_porção2)
-PORÇÃO(Nome, Tipo, Quantidade, Data_preparação) - falta chave primária
-INGREDIENTE(ID_ingrediente, Nome, Grupo, Quantidade, Ref_ingrediente)
-   - Ref_ingrediente: chave estrangeira para INGREDIENTE
+
+CARDÁPIO(_Id_, Data, Tipo_refeicao, Id_refeição)
+   Id_refeição chave estrangeira -> REFEIÇÃO(ID)
+
+REFEIÇÃO(_Id_, Tipo, Horário) - falta a chave primária - colocar grupos
+
+REGRA_REFEIÇÃO(_Id_, Id_refeição, Id_regra)
+  Id_refeição chave estrangeira -> REFEIÇÃO(Id)
+  Id_regra chave estrangeira -> REGRA(Id) 
+
+REGRA(_Id_, Nome_porção1, Nome_porção2)
+
+PORÇÃO(_Nome_, Tipo, Quantidade, Data_preparação, Id_refeição)
+  Id_refeição chave estrangeira -> REFEIÇÃO(Id) 
+
+
+INGREDIENTE(Id_ingrediente, Nome, Grupo, Quantidade, Ref_ingrediente, Nome_porção)
+   Ref_ingrediente chave estrangeira -> INGREDIENTE(Id_ingrediente)
+   Nome_porção chave estrangeira -> PORÇÃO(Nome)
 ~~~
