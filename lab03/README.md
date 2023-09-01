@@ -18,7 +18,13 @@ ALUNO(Nome, _RA_ , Email)
 BANDEJA(_Id_, Data_consumo, RA_aluno)
    RA_aluno chave estrangeira -> ALUNO(Ra)
 
-FORMA() - falta a chave primária
+FORMA(_Id_, Id_bandeja, Id_cardápio) - falta a chave primária
+   Id_bandeja chave estrangeira -> BANDEJA(Id)
+   Id_cardápio chave estrangeira -> CARDÁPIO(Id)
+
+FORMA_PORÇÃO(_Id_, Id_forma, Id_porção)
+   Id_forma chave estrangeira -> FORMA(Id)
+   Id_porção chave estrangeira -> PORÇÃO(Nome)
 
 CARDÁPIO(_Id_, Data, Tipo_refeicao, Id_refeição)
    Id_refeição chave estrangeira -> REFEIÇÃO(ID)
