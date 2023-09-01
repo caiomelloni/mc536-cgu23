@@ -23,7 +23,7 @@ FORMA() - falta a chave primária
 CARDÁPIO(_Id_, Data, Tipo_refeicao, Id_refeição)
    Id_refeição chave estrangeira -> REFEIÇÃO(ID)
 
-REFEIÇÃO(_Id_, Tipo, Horário) - falta a chave primária - colocar grupos
+REFEIÇÃO(_Id_, Tipo, Horário)
 
 REGRA_REFEIÇÃO(_Id_, Id_refeição, Id_regra)
   Id_refeição chave estrangeira -> REFEIÇÃO(Id)
