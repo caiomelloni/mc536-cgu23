@@ -1,0 +1,64 @@
+# Equipe CGU23
+
+# Subgrupo A
+* Caio Melloni dos Santos - 167974
+* Udson Charles Batagini - 244899
+* Guilherme Segolin Selmi - 173947
+
+## Exercício
+
+Faça a projeção em relação a Patologia, ou seja, conecte patologias que são tratadas pela mesma droga.
+
+### Resolução
+~~~cypher
+MATCH (p1:Pathology)<-[a]-(d:Drug)-[b]->(p2:Pathology)
+WHERE p1.code <> p2.code
+MERGE (p1)<-[r:Relates]->(p2)
+ON CREATE SET r.weight=1
+ON MATCH SET r.weight=r.weight+1
+~~~
+
+# Trabalhando com Efeitos Colaterais
+
+Considere o seguinte arquivo que indica um conjunto de pessoas (identificadas por código) e as drogas que elas usam:
+
+[https://raw.githubusercontent.com/santanche/lab2learn/master/data/faers-2017/drug-use.csv]
+
+Considere este outro arquivo que indica as mesmas pessoas e efeitos colaterais que elas experimentaram:
+
+[https://raw.githubusercontent.com/santanche/lab2learn/master/data/faers-2017/sideeffect.csv]
+
+## Exercício
+
+Construa um grafo ligando os medicamentos aos efeitos colaterais (com pesos associados) a partir dos registros das pessoas, ou seja, se uma pessoa usa um medicamento e ela teve um efeito colateral, o medicamento deve ser ligado ao efeito colateral.
+
+### Resolução
+~~~cypher
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/santanche/lab2learn/master/data/faers-2017/sideeffect.csv' as sideef
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/santanche/lab2learn/master/data/faers-2017/drug-use.csv' as drugs
+MATCH (d:Drug {code: drugs.codedrug})
+MATCH (p:Pathology {code: sideef.codePathology})
+WHERE drugs.idperson = sideef.idPerson
+MERGE (d)-[r:SideEffect]->(p)
+ON CREATE SET r.weight=1
+ON MATCH SET r.weight=r.weight+1
+~~~
+
+## Exercício
+
+Que tipo de análise interessante pode ser feita com esse grafo?
+
+Proponha um tipo de análise e escreva uma sentença em Cypher que realize a análise.
+
+### Resolução
+
+Qual combinação de medicamentos se anulam, ou seja, o efeito colateral de um é anulado pela doença que o outro trata
+~~~cypher
+MATCH (d1:Drug)-[t1:Treats]->(p1:Pathology)
+MATCH (d2: Drug)-[r1:SideEffect]->(p1:Pathology)
+MATCH (d2:Drug)-[t2:Treats]->(p2:Pathology)
+MATCH (d1: Drug)-[r2:SideEffect]->(p2:Pathology)
+MERGE (d1)<-[c:Cancel]->(d2)
+ON CREATE SET c.weight=1
+ON MATCH SET c.weight=c.weight+1
+~~~
