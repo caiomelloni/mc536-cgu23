@@ -34,12 +34,28 @@ Construa um grafo ligando os medicamentos aos efeitos colaterais (com pesos asso
 
 ### Resolução
 ~~~cypher
+//Create Persons and their relations
+LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/santanche/lab2learn/master/data/faers-2017/drug-use.csv' as persons
+MATCH (d:Drug {code: persons.codedrug})
+MATCH (h:Pathology {code: persons.codepathology})
+CREATE (p:Person {id: persons.idperson})
+MERGE (p)-[a:Uses]->(d)
+ON CREATE SET a.weight=1
+ON MATCH SET a.weight=a.weight+1
+MERGE (h)-[b:Affects]->(p)
+ON CREATE SET b.weight=1
+ON MATCH SET b.weight=b.weight+1
+
+//Index for Person Id
+CREATE INDEX FOR (var:Person) ON var.id
+
+//Creates relations
 LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/santanche/lab2learn/master/data/faers-2017/sideeffect.csv' as sideef
-LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/santanche/lab2learn/master/data/faers-2017/drug-use.csv' as drugs
-MATCH (d:Drug {code: drugs.codedrug})
-MATCH (p:Pathology {code: sideef.codePathology})
-WHERE drugs.idperson = sideef.idPerson
-MERGE (d)-[r:SideEffect]->(p)
+
+//Finally, creates the relation
+MATCH (p:Person {id: sideef.idPerson})-[:Uses]-> (d:Drug)
+MATCH (h:Pathology {code: sideef.codePathology})
+MERGE (d)-[r:SideEffect]->(h)
 ON CREATE SET r.weight=1
 ON MATCH SET r.weight=r.weight+1
 ~~~
