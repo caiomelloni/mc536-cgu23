@@ -52,7 +52,6 @@ CREATE INDEX FOR (var:Person) ON var.id
 //Creates relations
 LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/santanche/lab2learn/master/data/faers-2017/sideeffect.csv' as sideef
 
-//Finally, creates the relation
 MATCH (p:Person {id: sideef.idPerson})-[:Uses]-> (d:Drug)
 MATCH (h:Pathology {code: sideef.codePathology})
 MERGE (d)-[r:SideEffect]->(h)
