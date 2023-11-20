@@ -1,9 +1,11 @@
-# Equipe CGU23
+# Equipe Data Miners
 
-# Subgrupo A
+# Subgrupo B
 * Caio Melloni dos Santos - 167974
 * Udson Charles Batagini - 244899
 * Guilherme Segolin Selmi - 173947
+
+## Tarefa de Cypher sobre Patologias, Medicamentos e Efeitos Colaterais
 
 ## Exercício
 
@@ -36,24 +38,22 @@ Construa um grafo ligando os medicamentos aos efeitos colaterais (com pesos asso
 ~~~cypher
 //Create Persons and their relations
 LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/santanche/lab2learn/master/data/faers-2017/drug-use.csv' as persons
-MATCH (d:Drug {code: persons.codedrug})
-MATCH (h:Pathology {code: persons.codepathology})
-CREATE (p:Person {id: persons.idperson})
+MERGE (d:Drug {code: persons.codedrug})
+MERGE (h:Pathology {code: persons.codepathology})
+MERGE (p:Person {id: persons.idperson})
 MERGE (p)-[a:Uses]->(d)
-ON CREATE SET a.weight=1
-ON MATCH SET a.weight=a.weight+1
 MERGE (h)-[b:Affects]->(p)
-ON CREATE SET b.weight=1
-ON MATCH SET b.weight=b.weight+1
-
+~~~
+~~~cypher
 //Index for Person Id
 CREATE INDEX FOR (var:Person) ON var.id
-
+~~~
+~~~cypher
 //Creates relations
 LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/santanche/lab2learn/master/data/faers-2017/sideeffect.csv' as sideef
 
 MATCH (p:Person {id: sideef.idPerson})-[:Uses]-> (d:Drug)
-MATCH (h:Pathology {code: sideef.codePathology})
+MERGE (h:Pathology {code: sideef.codePathology})
 MERGE (d)-[r:SideEffect]->(h)
 ON CREATE SET r.weight=1
 ON MATCH SET r.weight=r.weight+1
