@@ -14,7 +14,6 @@ Faça a projeção em relação a Patologia, ou seja, conecte patologias que sã
 ### Resolução
 ~~~cypher
 MATCH (p1:Pathology)<-[a]-(d:Drug)-[b]->(p2:Pathology)
-WHERE p1.code <> p2.code
 MERGE (p1)<-[r:Relates]->(p2)
 ON CREATE SET r.weight=1
 ON MATCH SET r.weight=r.weight+1
@@ -38,11 +37,11 @@ Construa um grafo ligando os medicamentos aos efeitos colaterais (com pesos asso
 ~~~cypher
 //Create Persons and their relations
 LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/santanche/lab2learn/master/data/faers-2017/drug-use.csv' as persons
-MERGE (d:Drug {code: persons.codedrug})
-MERGE (h:Pathology {code: persons.codepathology})
+MATCH (d:Drug {code: persons.codedrug})
+MATCH (h:Pathology {code: persons.codepathology})
 MERGE (p:Person {id: persons.idperson})
-MERGE (p)-[a:Uses]->(d)
-MERGE (h)-[b:Affects]->(p)
+CREATE (p)-[a:Uses]->(d)
+CREATE (h)-[b:Affects]->(p)
 ~~~
 ~~~cypher
 //Index for Person Id
@@ -52,8 +51,8 @@ CREATE INDEX FOR (var:Person) ON var.id
 //Creates relations
 LOAD CSV WITH HEADERS FROM 'https://raw.githubusercontent.com/santanche/lab2learn/master/data/faers-2017/sideeffect.csv' as sideef
 
-MATCH (p:Person {id: sideef.idPerson})-[:Uses]-> (d:Drug)
-MERGE (h:Pathology {code: sideef.codePathology})
+MATCH (p:Person {id: sideef.idPerson})-[:Uses]->(d:Drug)
+MATCH (h:Pathology {code: sideef.codePathology})
 MERGE (d)-[r:SideEffect]->(h)
 ON CREATE SET r.weight=1
 ON MATCH SET r.weight=r.weight+1
@@ -67,13 +66,9 @@ Proponha um tipo de análise e escreva uma sentença em Cypher que realize a an�
 
 ### Resolução
 
-Qual combinação de medicamentos se anulam, ou seja, o efeito colateral de um é anulado pela doença que o outro trata
+Quais as drogas com maiores incidências de colaterais
 ~~~cypher
-MATCH (d1:Drug)-[t1:Treats]->(p1:Pathology)
-MATCH (d2: Drug)-[r1:SideEffect]->(p1:Pathology)
-MATCH (d2:Drug)-[t2:Treats]->(p2:Pathology)
-MATCH (d1: Drug)-[r2:SideEffect]->(p2:Pathology)
-MERGE (d1)<-[c:Cancel]->(d2)
-ON CREATE SET c.weight=1
-ON MATCH SET c.weight=c.weight+1
+MATCH (d:Drug)-[s:SideEffect]->(p:Pathology)
+WHERE s.weight > 20
+return d,s,p
 ~~~
